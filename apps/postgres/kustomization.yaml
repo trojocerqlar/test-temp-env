@@ -1,0 +1,25 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - deployment.yaml
+  - service.yaml
+
+namespace: cerqlar
+
+commonLabels:
+  app.kubernetes.io/managed-by: kustomize
+
+configMapGenerator:
+  - name: postgres-config
+    literals:
+      - POSTGRES_DB=myapp
+
+secretGenerator:
+  - name: postgres-secret
+    literals:
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=changeme123
+
+generatorOptions:
+  disableNameSuffixHash: true

@@ -1,0 +1,50 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: platform
+spec:
+  generators:
+  - list:
+      elements:
+      - app: postgres
+        path: apps/postgres
+        tier: db
+      - app: mongodb
+        path: apps/mongodb
+        tier: db
+      - app: trades-service
+        path: apps/trades-service
+        tier: services
+      - app: inventory-service
+        path: apps/inventory-service
+        tier: services
+
+  strategy:
+    type: RollingSync
+    rollingSync:
+      steps:
+      - matchExpressions:
+        - key: tier
+          operator: In
+          values: ["db"]
+        # default maxUpdate=100% => all DB apps sync together
+      - matchExpressions:
+        - key: tier
+          operator: In
+          values: ["services"]
+        # default maxUpdate=100% => all services sync together (after step 1 is done)
+
+  template:
+    metadata:
+      name: '{{.app}}'
+      labels:
+        tier: '{{.tier}}'
+    spec:
+      project: my-project
+      source:
+        repoURL: https://github.com/trojocerqlar/test-temp-env.git
+        targetRevision: HEAD
+        path: '{{.path}}'
+      destination:
+        server: https://kubernetes.default.svc
+        namespace: default
