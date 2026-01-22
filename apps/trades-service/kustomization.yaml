@@ -14,5 +14,5 @@ commonLabels:
   app.kubernetes.io/name: nginx
 
 replicas:
-  - name: nginx
+  - name: nginx-trades
     count: 2
