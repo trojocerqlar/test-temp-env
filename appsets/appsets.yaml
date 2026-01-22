@@ -41,7 +41,7 @@ spec:
       labels:
         tier: '{{.tier}}'
     spec:
-      project: my-project
+      project: default
       source:
         repoURL: https://github.com/trojocerqlar/test-temp-env.git
         targetRevision: HEAD
